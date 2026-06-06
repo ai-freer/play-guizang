@@ -1,0 +1,11 @@
+node_modules
+dist
+output
+tmp
+.git
+.DS_Store
+npm-debug.log*
+Dockerfile
+docker-compose.yml
+docs
+references

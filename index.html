@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>消消藏师傅</title>
+  </head>
+  <body>
+    <div id="app">
+      <div id="game-shell">
+        <section id="hud" aria-label="游戏状态">
+          <div class="brand">
+            <span class="level-pill" id="level-label">第 1 关</span>
+            <h1>消消藏师傅</h1>
+          </div>
+          <div class="stats">
+            <div class="score-card">
+              <span>分数</span>
+              <strong id="score-value">0</strong>
+            </div>
+            <div class="moves-orb">
+              <span>步数</span>
+              <strong id="moves-value">0</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="level-picker" id="level-picker" aria-label="关卡选择"></section>
+
+        <section class="targets" id="targets" aria-label="关卡目标"></section>
+
+        <main id="game-container" aria-label="消消乐棋盘"></main>
+
+        <section class="tools" aria-label="道具背包">
+          <div class="tool-title">
+            <strong>道具背包</strong>
+            <span>轻量工具</span>
+          </div>
+          <div class="tool-row">
+            <button class="tool-button selected" id="tool-swap" type="button">
+              <span class="tool-core image-core" aria-hidden="true">
+                <img class="tool-icon" src="/assets/tools/tool-swap.png" alt="" />
+              </span>
+              <span class="tool-name">换位</span>
+              <span class="tool-badge">4</span>
+            </button>
+            <button class="tool-button" id="tool-bomb" type="button">
+              <span class="tool-core image-core" aria-hidden="true">
+                <img class="tool-icon" src="/assets/tools/tool-bomb.png" alt="" />
+              </span>
+              <span class="tool-name">炸弹</span>
+              <span class="tool-badge">3</span>
+            </button>
+            <button class="tool-button" id="tool-refresh" type="button">
+              <span class="tool-core image-core" aria-hidden="true">
+                <img class="tool-icon" src="/assets/tools/tool-refresh.png" alt="" />
+              </span>
+              <span class="tool-name">刷新</span>
+              <span class="tool-badge">2</span>
+            </button>
+            <button class="tool-button" id="tool-hint" type="button">
+              <span class="tool-core image-core" aria-hidden="true">
+                <img class="tool-icon" src="/assets/tools/tool-hint.png" alt="" />
+              </span>
+              <span class="tool-name">提示</span>
+              <span class="tool-badge">1</span>
+            </button>
+          </div>
+        </section>
+      </div>
+
+      <dialog id="result-dialog">
+        <div class="dialog-card">
+          <h2 id="result-title">过关</h2>
+          <p id="result-body">继续下一关。</p>
+          <button id="result-action" type="button">继续</button>
+        </div>
+      </dialog>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

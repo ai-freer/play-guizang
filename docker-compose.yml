@@ -1,0 +1,16 @@
+services:
+  xiaoxiao-cangshifu:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: xiaoxiao-cangshifu:latest
+    container_name: xiaoxiao-cangshifu
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8088:80"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1/healthz | grep -q ok"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
