@@ -240,6 +240,15 @@ button { font: inherit; }
   letter-spacing: -0.5px;
 }
 
+/* 大数字自适应字号：根据 data-length 阶梯下调 */
+.score-card[data-length="5"] strong,
+.moves-orb[data-length="5"] strong { font-size: 32px; }
+.score-card[data-length="6"] strong,
+.moves-orb[data-length="6"] strong { font-size: 28px; }
+.score-card[data-length="7"] strong,
+.score-card[data-length="8"] strong,
+.moves-orb[data-length="7"] strong { font-size: 22px; }
+
 /* === 关卡条：金币勋章 === */
 .level-picker {
   display: flex;
@@ -386,6 +395,53 @@ button { font: inherit; }
     inset 0 0 0 8px var(--gold-light),
     0 12px 0 rgba(0, 0, 0, 0.55),
     0 24px 36px rgba(0, 0, 0, 0.5);
+}
+
+/* === 道具模式提示横幅（DOM 浮层，不被 canvas scale 影响） === */
+.tool-banner {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  padding: 8px 22px;
+  border-radius: var(--radius-pill);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.5), transparent 50%),
+    linear-gradient(180deg, var(--gold-light) 0%, var(--gold) 55%, var(--gold-deep) 100%);
+  color: var(--ink-deep);
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.55),
+    inset 0 -3px 0 rgba(122, 86, 10, 0.4),
+    0 4px 0 var(--gold-darker),
+    0 8px 14px rgba(0, 0, 0, 0.4);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+  animation: tool-banner-in 200ms ease-out;
+}
+
+.tool-banner[data-tool="bomb"] {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.5), transparent 50%),
+    linear-gradient(180deg, #ff9580, #ff5a3c 55%, #b32414);
+  color: #fff;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.55),
+    inset 0 -3px 0 rgba(140, 28, 14, 0.5),
+    0 4px 0 #6c0c12,
+    0 8px 14px rgba(0, 0, 0, 0.4);
+}
+
+.tool-banner.hidden { display: none; }
+
+@keyframes tool-banner-in {
+  from { opacity: 0; transform: translate(-50%, -8px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
 }
 
 #game-container canvas {
@@ -777,9 +833,9 @@ button { font: inherit; }
   .level-picker { grid-area: levels; margin: 0; padding-bottom: 2px; }
 
   .level-chip {
-    min-width: 31px;
-    height: 31px;
-    font-size: 12px;
+    min-width: 36px;
+    height: 36px;
+    font-size: 13px;
     box-shadow:
       inset 0 0 0 1.5px rgba(255, 255, 255, 0.6),
       0 3px 0 var(--gold-darker),
@@ -872,18 +928,18 @@ button { font: inherit; }
   #app { padding: 10px; }
 
   #game-shell {
-    width: min(98vw, calc(min(72vh, 700px) + 386px));
+    width: min(98vw, calc(min(74vh, 720px) + 420px));
     max-height: calc(100dvh - 20px);
     display: grid;
-    grid-template-columns: minmax(520px, min(72vh, 700px)) minmax(280px, 340px);
+    grid-template-columns: minmax(520px, min(74vh, 720px)) minmax(320px, 380px);
     grid-template-areas:
       "board hud"
       "board levels"
       "board targets"
       "board tools";
     align-items: start;
-    gap: 12px 16px;
-    padding: 16px;
+    gap: 10px 18px;
+    padding: 18px;
     border-radius: 28px;
     overflow: hidden;
   }
@@ -892,40 +948,45 @@ button { font: inherit; }
     grid-area: hud;
     display: grid;
     grid-template-columns: 1fr;
-    gap: 10px;
-    padding: 14px 16px;
-    border-radius: 20px;
+    gap: 8px;
+    padding: 10px 14px 12px;
+    border-radius: 18px;
     box-shadow:
       inset 0 0 0 2.5px var(--gold-light),
       inset 0 0 0 4.5px var(--gold-deep),
-      0 7px 0 var(--gold-darker),
-      0 12px 18px rgba(0, 0, 0, 0.4);
+      0 6px 0 var(--gold-darker),
+      0 10px 16px rgba(0, 0, 0, 0.4);
   }
 
-  .brand h1 { margin-top: 4px; font-size: 38px; }
-  .level-pill { min-width: 92px; height: 30px; padding: 0 12px; }
+  .brand { gap: 4px; }
+  .brand h1 { margin-top: 2px; font-size: 30px; line-height: 1; }
+  .level-pill { min-width: 86px; height: 26px; padding: 0 12px; font-size: 13px; }
 
   .stats {
     width: 100%;
     display: grid;
-    grid-template-columns: 1fr 92px;
+    grid-template-columns: 1fr 82px;
     gap: 10px;
+    margin-top: 2px;
   }
 
   .score-card {
     min-width: 0;
-    min-height: 92px;
-    padding: 26px 12px 14px;
-    border-radius: 18px;
+    min-height: 82px;
+    padding: 22px 12px 12px;
+    border-radius: 16px;
   }
 
   .moves-orb {
-    width: 92px;
-    height: 92px;
+    width: 82px;
+    height: 82px;
   }
 
-  .score-card span, .moves-orb span { top: 9px; font-size: 11px; letter-spacing: 1.5px; }
-  .score-card strong, .moves-orb strong { font-size: 32px; }
+  .score-card span, .moves-orb span { top: 7px; font-size: 11px; letter-spacing: 1.5px; }
+  .score-card strong, .moves-orb strong { font-size: 30px; }
+  .score-card[data-length="5"] strong, .moves-orb[data-length="5"] strong { font-size: 26px; }
+  .score-card[data-length="6"] strong { font-size: 22px; }
+  .score-card[data-length="7"] strong, .score-card[data-length="8"] strong { font-size: 18px; }
 
   .level-picker {
     grid-area: levels;
@@ -936,7 +997,7 @@ button { font: inherit; }
     overflow: visible;
   }
 
-  .level-chip { min-width: 36px; height: 36px; font-size: 14px; }
+  .level-chip { min-width: 40px; height: 40px; font-size: 14px; }
 
   .targets { grid-area: targets; grid-template-columns: 1fr; gap: 9px; margin: 0; }
 
@@ -979,35 +1040,35 @@ button { font: inherit; }
   .tool-title strong { font-size: 18px; letter-spacing: 1px; }
   .tool-title span { padding: 3px 8px; font-size: 12px; }
 
-  .tool-row { grid-template-columns: repeat(4, 1fr); gap: 9px; }
+  .tool-row { grid-template-columns: repeat(4, 1fr); gap: 10px; }
 
   .tool-button {
-    min-height: 66px;
-    padding: 6px 3px 5px;
-    border-radius: 13px;
+    min-height: 84px;
+    padding: 8px 4px 6px;
+    border-radius: 15px;
     box-shadow:
-      inset 0 0 0 1.5px rgba(255, 255, 255, 0.55),
-      0 5px 0 var(--tool-deepest),
-      0 9px 10px rgba(0, 0, 0, 0.3);
+      inset 0 0 0 1.8px rgba(255, 255, 255, 0.55),
+      0 6px 0 var(--tool-deepest),
+      0 10px 12px rgba(0, 0, 0, 0.3);
   }
 
-  .tool-button::before { inset: 3px; border-radius: 10px; }
-  .tool-core.image-core { width: 40px; height: 40px; }
+  .tool-button::before { inset: 3px; border-radius: 12px; }
+  .tool-core.image-core { width: 50px; height: 50px; }
 
   .tool-name {
-    min-width: 38px;
-    margin-top: 4px;
-    padding: 2px 6px;
-    font-size: 12px;
-    letter-spacing: 0.5px;
+    min-width: 44px;
+    margin-top: 5px;
+    padding: 3px 8px;
+    font-size: 13px;
+    letter-spacing: 1px;
   }
 
   .tool-badge {
-    top: -8px;
-    right: -7px;
-    width: 24px;
-    height: 24px;
-    font-size: 12px;
+    top: -9px;
+    right: -8px;
+    width: 26px;
+    height: 26px;
+    font-size: 13px;
     box-shadow:
       inset 0 0 0 1.8px rgba(255, 255, 255, 0.85),
       0 3px 0 #6c0c2a,
