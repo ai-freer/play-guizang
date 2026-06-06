@@ -77,6 +77,59 @@ export class Match3Game {
     return true;
   }
 
+  useSwap(a: Position, b: Position): MoveResult {
+    if (this.mode !== "playing") return { accepted: false, reason: "busy" };
+    if (a.row === b.row && a.col === b.col) return { accepted: false, reason: "not-adjacent" };
+    if (this.tools.swap <= 0) return { accepted: false, reason: "no-match" };
+    consumeTool(this.tools, "swap");
+    this.board.swap(a, b);
+    const steps = this.resolveBoard();
+    const won = this.isWon();
+    const lost = !won && this.movesLeft <= 0;
+    this.mode = won ? "won" : lost ? "lost" : "playing";
+    this.persistIfNeeded(won);
+    if (!this.board.hasAnyAvailableMove() && this.mode === "playing") this.board.reshuffle();
+    return { accepted: true, steps, won, lost };
+  }
+
+  useBomb(center: Position): MoveResult {
+    if (this.mode !== "playing") return { accepted: false, reason: "busy" };
+    if (this.tools.bomb <= 0) return { accepted: false, reason: "no-match" };
+    if (!this.board.isInside(center)) return { accepted: false, reason: "not-adjacent" };
+    consumeTool(this.tools, "bomb");
+
+    const cleared: Tile[] = [];
+    for (let dr = -1; dr <= 1; dr += 1) {
+      for (let dc = -1; dc <= 1; dc += 1) {
+        const pos = { row: center.row + dr, col: center.col + dc };
+        const tile = this.board.get(pos);
+        if (!tile) continue;
+        cleared.push(tile);
+        this.board.set(pos, null);
+      }
+    }
+    const bombScore = scoreForClear(cleared.length, 2);
+    this.score += bombScore;
+    this.updateTargets(cleared);
+    const movement = this.board.collapseAndFill();
+    const bombStep: ResolutionStep = {
+      groups: [{ positions: [center], type: 0 }],
+      cleared,
+      scoreAdded: bombScore,
+      chain: 1,
+      drops: movement.drops,
+      fills: movement.fills,
+    };
+    const cascade = this.resolveBoard();
+    const steps = [bombStep, ...cascade];
+    const won = this.isWon();
+    const lost = !won && this.movesLeft <= 0;
+    this.mode = won ? "won" : lost ? "lost" : "playing";
+    this.persistIfNeeded(won);
+    if (!this.board.hasAnyAvailableMove() && this.mode === "playing") this.board.reshuffle();
+    return { accepted: true, steps, won, lost };
+  }
+
   collectHint(): { from: Position; to: Position } | null {
     return findValidMove(this.board);
   }

@@ -14,6 +14,12 @@ await page.goto(url, { waitUntil: "networkidle" });
 await page.waitForFunction(() => typeof window.render_game_to_text === "function");
 await page.waitForTimeout(500);
 
+const readState = () =>
+  page.evaluate(() => {
+    if (typeof window.render_game_to_text !== "function") return null;
+    return JSON.parse(window.render_game_to_text());
+  });
+
 const before = JSON.parse(await page.evaluate(() => window.render_game_to_text()));
 const move = await page.evaluate(() => {
   const state = JSON.parse(window.render_game_to_text());
@@ -71,7 +77,11 @@ const point = (pos) => ({
 await page.mouse.click(point(move.from).x, point(move.from).y);
 await page.waitForTimeout(120);
 await page.mouse.click(point(move.to).x, point(move.to).y);
-await page.waitForTimeout(900);
+await page.waitForFunction(
+  (expectedMovesLeft) => JSON.parse(window.render_game_to_text()).movesLeft === expectedMovesLeft,
+  before.movesLeft - 1,
+  { timeout: 4000 },
+);
 
 const after = JSON.parse(await page.evaluate(() => window.render_game_to_text()));
 
@@ -83,12 +93,16 @@ if (after.score <= before.score) {
   throw new Error(`Expected score to increase from ${before.score}, got ${after.score}`);
 }
 
+await page.waitForTimeout(2500);
 await page.evaluate(() => window.__xxcs_forceWin());
 await page.locator("#result-action").click();
-await page.waitForTimeout(500);
-const progressed = JSON.parse(await page.evaluate(() => window.render_game_to_text()));
-if (progressed.level !== before.level + 1) {
-  throw new Error(`Expected next level ${before.level + 1}, got ${progressed.level}`);
+let progressed = await readState();
+for (let i = 0; i < 16 && progressed?.level !== before.level + 1; i += 1) {
+  await page.waitForTimeout(250);
+  progressed = await readState();
+}
+if (progressed?.level !== before.level + 1) {
+  throw new Error(`Expected next level ${before.level + 1}, got ${progressed?.level ?? "unavailable"}`);
 }
 const cookie = await page.context().cookies(url);
 if (!cookie.some((item) => item.name === "xxcs_progress")) {

@@ -1,78 +1,150 @@
 :root {
   color-scheme: dark;
   font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-  --stage: #102833;
-  --ink: #223041;
+
+  --stage-deep: #0a1535;
+  --stage-mid: #16245a;
+  --stage-hi: #2a3f8a;
+  --stage-glow: #4b6dd6;
+
+  --gold: #f5c542;
+  --gold-deep: #b8810f;
+  --gold-darker: #7a560a;
+  --gold-light: #fff1a8;
+
+  --gem-pink: #ff3d6e;
+  --gem-pink-dark: #a8123c;
+  --gem-cyan: #38d2ff;
+  --gem-cyan-dark: #0a5b88;
+  --gem-violet: #a06bff;
+  --gem-violet-dark: #5a2a9c;
+  --gem-mint: #2fe0b0;
+  --gem-mint-dark: #0a8866;
+
   --cream: #fff5d7;
-  --gold: #ffd54d;
-  --pink: #ff4f73;
-  --teal: #38d6b0;
-  --blue: #48a6ff;
+  --ink-deep: #1a0c2e;
+  --ink-soft: #2a1858;
+  --glass-dark: rgba(10, 21, 53, 0.78);
+  --glass-light: rgba(255, 255, 255, 0.08);
+
+  --radius-shell: 32px;
+  --radius-card: 22px;
+  --radius-pill: 999px;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
   min-width: 360px;
   min-height: 100dvh;
   overflow-x: hidden;
+  color: var(--cream);
   background:
-    linear-gradient(120deg, rgba(255, 213, 77, 0.16) 0 10%, transparent 10% 24%, rgba(255, 79, 115, 0.12) 24% 34%, transparent 34% 100%),
-    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 13px),
-    linear-gradient(135deg, #0d554d, #13213d 72%);
+    radial-gradient(ellipse at 18% 8%, rgba(160, 107, 255, 0.28) 0%, transparent 42%),
+    radial-gradient(ellipse at 88% 92%, rgba(56, 210, 255, 0.20) 0%, transparent 48%),
+    radial-gradient(ellipse at 50% 50%, rgba(75, 109, 214, 0.18) 0%, transparent 65%),
+    linear-gradient(160deg, #050a24 0%, #0a1535 38%, #16245a 76%, #0a1535 100%);
 }
 
-button {
-  font: inherit;
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 12% 22%, rgba(255, 255, 255, 0.06) 0 1.2px, transparent 1.4px),
+    radial-gradient(circle at 74% 14%, rgba(255, 255, 255, 0.05) 0 1px, transparent 1.2px),
+    radial-gradient(circle at 36% 78%, rgba(255, 255, 255, 0.05) 0 0.9px, transparent 1.1px),
+    radial-gradient(circle at 88% 62%, rgba(255, 255, 255, 0.05) 0 1.2px, transparent 1.4px);
+  background-size: 320px 320px, 280px 280px, 360px 360px, 240px 240px;
+  opacity: 0.7;
 }
+
+button { font: inherit; }
 
 #app {
+  position: relative;
   min-height: 100dvh;
   display: grid;
   place-items: center;
   padding: 20px;
 }
 
+/* === 外壳：深色舞台 + 金色三层框 === */
 #game-shell {
   position: relative;
   width: min(94vw, 760px);
   padding: 22px;
-  border: 3px solid rgba(255, 255, 255, 0.85);
-  border-radius: 34px;
+  border-radius: var(--radius-shell);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 18%),
-    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 18px),
-    linear-gradient(180deg, rgba(15, 33, 49, 0.98), rgba(17, 36, 52, 0.99));
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 22%),
+    radial-gradient(ellipse at 50% 0%, rgba(75, 109, 214, 0.28), transparent 55%),
+    linear-gradient(170deg, #0d1a44 0%, #0a1535 50%, #15265c 100%);
   box-shadow:
-    0 28px 80px rgba(0, 0, 0, 0.42),
-    inset 0 0 0 2px rgba(255, 255, 255, 0.16),
-    inset 0 -10px 0 rgba(0, 0, 0, 0.18);
+    inset 0 0 0 3px var(--gold),
+    inset 0 0 0 6px var(--gold-darker),
+    inset 0 0 0 9px var(--gold-light),
+    inset 0 2px 24px rgba(255, 241, 168, 0.12),
+    0 30px 80px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(0, 0, 0, 0.6);
 }
 
+#game-shell::before {
+  content: "";
+  position: absolute;
+  inset: 14px;
+  border-radius: calc(var(--radius-shell) - 14px);
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 20%);
+}
+
+/* === HUD：皇冠绶带 === */
 #hud {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 18px;
-  padding: 16px 18px;
-  border: 4px solid var(--gold);
-  border-radius: 26px;
+  padding: 18px 22px 18px;
+  border-radius: var(--radius-card);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.72), transparent 36%),
-    linear-gradient(135deg, #fff8df, #ffeaa5);
-  color: #0e5b55;
-  box-shadow: 0 8px 0 #b76d10, inset 0 0 0 2px rgba(255, 255, 255, 0.7);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.45), transparent 36%),
+    linear-gradient(135deg, #ffe788 0%, #ffd14a 45%, #f5b32a 100%);
+  color: var(--ink-deep);
+  box-shadow:
+    inset 0 0 0 3px var(--gold-light),
+    inset 0 0 0 5px var(--gold-deep),
+    inset 0 -6px 0 rgba(122, 86, 10, 0.35),
+    0 10px 0 var(--gold-darker),
+    0 18px 28px rgba(0, 0, 0, 0.4);
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
 }
 
 .brand h1 {
-  margin: 8px 0 0;
-  font-size: clamp(34px, 8vw, 58px);
-  line-height: 0.95;
+  margin: 0;
+  font-size: clamp(32px, 6.5vw, 50px);
+  line-height: 0.96;
   letter-spacing: 0;
-  text-shadow: 0 3px 0 #ffffff, 0 5px 0 rgba(0, 0, 0, 0.22);
+  color: #fff5d7;
+  text-shadow:
+    -2px 0 0 var(--ink-deep),
+    2px 0 0 var(--ink-deep),
+    0 -2px 0 var(--ink-deep),
+    0 2px 0 var(--ink-deep),
+    -2px -2px 0 var(--ink-deep),
+    2px -2px 0 var(--ink-deep),
+    -2px 2px 0 var(--ink-deep),
+    2px 2px 0 var(--ink-deep),
+    0 5px 0 rgba(0, 0, 0, 0.4),
+    0 8px 14px rgba(122, 60, 0, 0.55);
 }
 
 .level-pill {
@@ -82,10 +154,20 @@ button {
   min-width: 110px;
   height: 36px;
   padding: 0 18px;
-  border-radius: 999px;
-  background: var(--gold);
-  color: #5c3d10;
-  font-weight: 800;
+  border-radius: var(--radius-pill);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.4), transparent 50%),
+    linear-gradient(180deg, #ff5a82, var(--gem-pink) 60%, var(--gem-pink-dark));
+  color: #fff;
+  font-weight: 900;
+  font-size: 15px;
+  letter-spacing: 0.5px;
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.55),
+    inset 0 -4px 0 rgba(168, 18, 60, 0.5),
+    0 4px 0 #6c0c2a,
+    0 6px 10px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
 }
 
 .stats {
@@ -96,86 +178,142 @@ button {
 
 .score-card,
 .moves-orb {
+  position: relative;
   display: grid;
   place-items: center;
-  color: #4a3620;
-  font-weight: 800;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
 }
 
 .score-card {
   min-width: 150px;
-  padding: 10px 18px;
-  border: 3px solid #ffd35f;
-  border-radius: 22px;
-  background: linear-gradient(180deg, #fffdf0, #ffefb5);
-  box-shadow: inset 0 -4px 0 rgba(173, 106, 10, 0.16);
+  min-height: 70px;
+  padding: 22px 22px 14px;
+  border-radius: var(--radius-card);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.45), transparent 50%),
+    linear-gradient(180deg, #5ee4ff 0%, var(--gem-cyan) 55%, var(--gem-cyan-dark) 100%);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.65),
+    inset 0 -5px 0 rgba(10, 91, 136, 0.55),
+    0 5px 0 #084464,
+    0 9px 14px rgba(0, 0, 0, 0.28);
 }
 
 .moves-orb {
   width: 118px;
   height: 118px;
-  border: 5px solid #ffe98f;
-  border-radius: 999px;
-  background: var(--pink);
-  color: white;
-  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
-  box-shadow: inset 0 10px 0 rgba(255, 255, 255, 0.18), 0 7px 0 #a8183a;
+  border-radius: var(--radius-pill);
+  background:
+    radial-gradient(circle at 38% 28%, rgba(255, 255, 255, 0.55) 0 18%, transparent 38%),
+    linear-gradient(180deg, #ff7196 0%, var(--gem-pink) 55%, var(--gem-pink-dark) 100%);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.4);
+  box-shadow:
+    inset 0 0 0 4px rgba(255, 255, 255, 0.32),
+    inset 0 -10px 0 rgba(168, 18, 60, 0.5),
+    0 7px 0 #6c0c2a,
+    0 14px 18px rgba(0, 0, 0, 0.34);
 }
 
+/* 标签：绝对定位顶部，不占居中空间 */
 .score-card span,
 .moves-orb span {
-  font-size: 15px;
+  position: absolute;
+  top: 9px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  letter-spacing: 2px;
+  opacity: 0.9;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
+/* 数字：占满整个容器并真正居中 */
 .score-card strong,
 .moves-orb strong {
-  font-size: 36px;
+  font-size: 40px;
   line-height: 1;
+  font-weight: 900;
+  letter-spacing: -0.5px;
 }
 
-.targets {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
-  margin: 18px 0 14px;
-}
-
+/* === 关卡条：金币勋章 === */
 .level-picker {
   display: flex;
-  gap: 8px;
-  margin: 14px 0;
+  gap: 9px;
+  margin: 16px 0;
   overflow-x: auto;
-  padding-bottom: 4px;
+  padding: 4px 2px 6px;
+  scrollbar-width: thin;
 }
 
+.level-picker::-webkit-scrollbar { height: 4px; }
+.level-picker::-webkit-scrollbar-thumb { background: var(--gold-deep); border-radius: 3px; }
+
 .level-chip {
+  flex-shrink: 0;
   min-width: 42px;
   height: 42px;
-  border: 3px solid #ffe983;
-  border-radius: 999px;
-  background: #fff5d7;
-  color: #223041;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background:
+    radial-gradient(circle at 38% 30%, rgba(255, 255, 255, 0.5) 0 18%, transparent 36%),
+    linear-gradient(180deg, var(--gold-light) 0%, var(--gold) 50%, var(--gold-deep) 100%);
+  color: var(--ink-deep);
   font-weight: 900;
+  font-size: 16px;
   cursor: pointer;
-  box-shadow: 0 5px 0 #ad6a0a;
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.65),
+    inset 0 -4px 0 rgba(122, 86, 10, 0.45),
+    0 5px 0 var(--gold-darker),
+    0 8px 10px rgba(0, 0, 0, 0.3);
   transition: transform 120ms ease, filter 120ms ease, box-shadow 120ms ease;
 }
 
+.level-chip:not(:disabled):hover { filter: brightness(1.06); }
+
 .level-chip:not(:disabled):active {
-  transform: translateY(3px);
-  box-shadow: 0 2px 0 #ad6a0a;
+  transform: translateY(4px);
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.65),
+    0 1px 0 var(--gold-darker),
+    0 3px 6px rgba(0, 0, 0, 0.25);
 }
 
 .level-chip.active {
-  background: #ff4f73;
-  color: white;
-  box-shadow: 0 5px 0 #a8183a;
+  background:
+    radial-gradient(circle at 38% 30%, rgba(255, 255, 255, 0.55) 0 18%, transparent 36%),
+    linear-gradient(180deg, #ff7196 0%, var(--gem-pink) 55%, var(--gem-pink-dark) 100%);
+  color: #fff;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.55),
+    inset 0 -4px 0 rgba(168, 18, 60, 0.5),
+    0 0 0 3px var(--gold),
+    0 5px 0 #6c0c2a,
+    0 10px 18px rgba(255, 61, 110, 0.4);
 }
 
 .level-chip:disabled {
   cursor: not-allowed;
-  opacity: 0.45;
-  filter: grayscale(1);
+  filter: grayscale(1) brightness(0.55);
+  opacity: 0.55;
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.4),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.3),
+    0 3px 0 rgba(0, 0, 0, 0.45);
+}
+
+/* === 目标条：深色玻璃 === */
+.targets {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin: 16px 0 14px;
 }
 
 .target-card {
@@ -184,35 +322,45 @@ button {
   gap: 10px;
   align-items: center;
   min-height: 84px;
-  padding: 10px;
-  border: 3px solid var(--accent);
-  border-radius: 22px;
+  padding: 10px 12px;
+  border-radius: var(--radius-card);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.74), transparent 42%),
-    #fff8e8;
-  color: var(--ink);
-  box-shadow: 0 6px 0 color-mix(in srgb, var(--accent) 58%, #5a3500), inset 0 0 0 2px rgba(255, 255, 255, 0.78);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 40%),
+    var(--glass-dark);
+  color: var(--cream);
+  box-shadow:
+    inset 0 0 0 1.5px var(--gold),
+    inset 0 0 0 3px rgba(184, 129, 15, 0.4),
+    0 6px 0 rgba(0, 0, 0, 0.4),
+    0 10px 18px rgba(0, 0, 0, 0.35);
 }
 
 .target-card img {
   width: 54px;
   height: 54px;
   object-fit: cover;
-  border: 3px solid white;
   border-radius: 14px;
-  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.18);
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.65),
+    0 0 0 2px var(--gold),
+    0 4px 0 var(--gold-darker),
+    0 6px 8px rgba(0, 0, 0, 0.4);
 }
 
 .target-card strong {
   display: block;
   margin-bottom: 6px;
+  font-size: 14px;
+  color: var(--gold-light);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
 }
 
 .target-card .bar {
-  height: 20px;
+  height: 18px;
   overflow: hidden;
-  border-radius: 999px;
-  background: #e5e3d6;
+  border-radius: var(--radius-pill);
+  background: rgba(0, 0, 0, 0.4);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.55), inset 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
 .target-card .bar span {
@@ -220,33 +368,46 @@ button {
   height: 100%;
   width: var(--progress);
   border-radius: inherit;
-  background: var(--accent);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.5), transparent 50%),
+    linear-gradient(180deg, #5ee4ff, var(--gem-cyan) 55%, var(--gem-cyan-dark));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.55), 0 0 8px rgba(56, 210, 255, 0.5);
 }
 
+/* === 棋盘外框 === */
 #game-container {
+  position: relative;
   overflow: hidden;
-  border: 5px solid var(--pink);
   border-radius: 30px;
-  background: #f3f8ee;
-  box-shadow: 0 10px 0 #06262b, 0 0 0 4px var(--gold), 0 22px 34px rgba(0, 0, 0, 0.32);
+  background: #0a1535;
+  box-shadow:
+    inset 0 0 0 3px var(--gold),
+    inset 0 0 0 6px var(--gold-darker),
+    inset 0 0 0 8px var(--gold-light),
+    0 12px 0 rgba(0, 0, 0, 0.55),
+    0 24px 36px rgba(0, 0, 0, 0.5);
 }
 
 #game-container canvas {
   display: block;
   width: 100%;
   height: auto;
+  border-radius: 26px;
 }
 
+/* === 道具栏 === */
 .tools {
   margin-top: 22px;
-  padding: 16px;
-  border: 3px solid #ffe983;
-  border-radius: 24px;
+  padding: 18px;
+  border-radius: var(--radius-card);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.68), transparent 32%),
-    linear-gradient(135deg, #fffdf4, #ffeeb2);
-  color: var(--ink);
-  box-shadow: 0 8px 0 #ad6a0a, inset 0 0 0 2px rgba(255, 255, 255, 0.74);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 30%),
+    var(--glass-dark);
+  box-shadow:
+    inset 0 0 0 1.5px var(--gold),
+    inset 0 0 0 3px rgba(184, 129, 15, 0.4),
+    0 8px 0 rgba(0, 0, 0, 0.4),
+    0 14px 24px rgba(0, 0, 0, 0.4);
 }
 
 .tool-title {
@@ -257,17 +418,32 @@ button {
 }
 
 .tool-title strong {
-  font-size: 30px;
-  text-shadow: 0 2px 0 rgba(255, 255, 255, 0.8);
+  font-size: 26px;
+  color: var(--gold-light);
+  letter-spacing: 2px;
+  text-shadow:
+    -1.5px 0 0 var(--ink-deep),
+    1.5px 0 0 var(--ink-deep),
+    0 -1.5px 0 var(--ink-deep),
+    0 1.5px 0 var(--ink-deep),
+    0 3px 0 rgba(0, 0, 0, 0.5),
+    0 5px 8px rgba(0, 0, 0, 0.5);
 }
 
 .tool-title span {
   padding: 5px 14px;
-  border-radius: 999px;
-  background: var(--gold);
-  color: #6a4815;
+  border-radius: var(--radius-pill);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.4), transparent 50%),
+    linear-gradient(180deg, var(--gold-light) 0%, var(--gold) 60%, var(--gold-deep) 100%);
+  color: var(--ink-deep);
   font-weight: 800;
-  box-shadow: inset 0 -3px 0 rgba(173, 106, 10, 0.16);
+  font-size: 12px;
+  letter-spacing: 1px;
+  box-shadow:
+    inset 0 0 0 1.5px rgba(255, 255, 255, 0.5),
+    inset 0 -3px 0 rgba(122, 86, 10, 0.4),
+    0 3px 0 var(--gold-darker);
 }
 
 .tool-row {
@@ -282,52 +458,95 @@ button {
   place-items: center;
   min-height: 128px;
   padding: 12px 7px 10px;
-  border: 3px solid var(--tool);
-  border-radius: 22px;
-  background: linear-gradient(#fff9df, #fff0ba);
-  color: var(--ink);
+  border: 0;
+  border-radius: var(--radius-card);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.12) 32%, transparent 60%),
+    linear-gradient(180deg, var(--tool-top) 0%, var(--tool) 50%, var(--tool-dark) 100%);
+  color: #fff;
   cursor: pointer;
-  box-shadow: 0 10px 0 var(--tool-dark), 0 16px 18px rgba(0, 0, 0, 0.25);
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.55),
+    inset 0 -6px 0 rgba(0, 0, 0, 0.25),
+    0 10px 0 var(--tool-deepest),
+    0 18px 22px rgba(0, 0, 0, 0.45);
   transform: translateY(0);
   transition: transform 130ms ease, box-shadow 130ms ease, filter 130ms ease;
 }
 
-.tool-button:hover,
+.tool-button::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border-radius: calc(var(--radius-card) - 6px);
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.28), transparent 38%);
+}
+
+.tool-button:hover { filter: brightness(1.06) saturate(1.1); }
+
 .tool-button.selected {
-  filter: saturate(1.1);
-  outline: 4px solid rgba(79, 217, 255, 0.68);
+  outline: 3px solid var(--gold-light);
+  outline-offset: 3px;
+  filter: brightness(1.08) saturate(1.15);
+  animation: gold-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes gold-pulse {
+  0%, 100% { box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.55),
+    inset 0 -6px 0 rgba(0, 0, 0, 0.25),
+    0 10px 0 var(--tool-deepest),
+    0 0 0 6px rgba(245, 197, 66, 0.55),
+    0 18px 22px rgba(0, 0, 0, 0.45); }
+  50% { box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.55),
+    inset 0 -6px 0 rgba(0, 0, 0, 0.25),
+    0 10px 0 var(--tool-deepest),
+    0 0 0 10px rgba(245, 197, 66, 0.25),
+    0 18px 28px rgba(245, 197, 66, 0.45); }
 }
 
 .tool-button:active {
-  transform: translateY(5px);
-  box-shadow: 0 5px 0 var(--tool-dark), 0 9px 12px rgba(0, 0, 0, 0.22);
+  transform: translateY(6px);
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.55),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.25),
+    0 4px 0 var(--tool-deepest),
+    0 8px 12px rgba(0, 0, 0, 0.3);
 }
 
 .tool-button:disabled,
 .tool-button.disabled {
   cursor: not-allowed;
-  filter: grayscale(0.85) brightness(0.78);
-  opacity: 0.72;
+  filter: grayscale(0.9) brightness(0.62);
+  opacity: 0.75;
+  animation: none;
 }
 
 .tool-button:nth-child(1) {
-  --tool: var(--blue);
-  --tool-dark: #0f67bd;
+  --tool-top: #7ec5ff;
+  --tool: var(--gem-cyan);
+  --tool-dark: #1b87c8;
+  --tool-deepest: #06436a;
 }
-
 .tool-button:nth-child(2) {
-  --tool: var(--pink);
-  --tool-dark: #a8183a;
+  --tool-top: #ff7196;
+  --tool: var(--gem-pink);
+  --tool-dark: var(--gem-pink-dark);
+  --tool-deepest: #6c0c2a;
 }
-
 .tool-button:nth-child(3) {
-  --tool: var(--teal);
-  --tool-dark: #0c876a;
+  --tool-top: #6fe9cb;
+  --tool: var(--gem-mint);
+  --tool-dark: var(--gem-mint-dark);
+  --tool-deepest: #035040;
 }
-
 .tool-button:nth-child(4) {
-  --tool: #ffb936;
-  --tool-dark: #ad6a0a;
+  --tool-top: #ffd87a;
+  --tool: var(--gold);
+  --tool-dark: var(--gold-deep);
+  --tool-deepest: var(--gold-darker);
 }
 
 .tool-core {
@@ -335,12 +554,10 @@ button {
   place-items: center;
   width: 68px;
   height: 68px;
-  border: 4px solid white;
-  border-radius: 999px;
-  color: white;
+  border-radius: var(--radius-pill);
+  color: #fff;
   font-weight: 900;
   text-shadow: 0 3px 0 rgba(0, 0, 0, 0.35);
-  box-shadow: inset 0 -8px 0 rgba(0, 0, 0, 0.16), inset 0 10px 0 rgba(255, 255, 255, 0.22);
 }
 
 .tool-core svg {
@@ -356,7 +573,6 @@ button {
 .tool-core.image-core {
   width: 76px;
   height: 76px;
-  border: 0;
   background: transparent;
   box-shadow: none;
 }
@@ -366,51 +582,53 @@ button {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 5px 3px rgba(0, 0, 0, 0.24));
-}
-
-.tool-core.blue {
-  background: var(--blue);
-}
-
-.tool-core.red {
-  background: var(--pink);
-}
-
-.tool-core.green {
-  background: var(--teal);
-}
-
-.tool-core.gold {
-  background: #ffb936;
+  filter:
+    drop-shadow(0 2px 0 rgba(0, 0, 0, 0.4))
+    drop-shadow(0 6px 6px rgba(0, 0, 0, 0.35));
 }
 
 .tool-name {
   margin-top: 8px;
   min-width: 64px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: #263140;
-  color: white;
-  font-size: 18px;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 50%),
+    rgba(10, 21, 53, 0.85);
+  color: #fff;
+  font-size: 17px;
   font-weight: 900;
+  letter-spacing: 1px;
+  box-shadow:
+    inset 0 0 0 1.5px rgba(255, 255, 255, 0.35),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.4);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
 }
 
 .tool-badge {
   position: absolute;
-  top: -14px;
-  right: -12px;
+  top: -10px;
+  right: -10px;
   display: grid;
   place-items: center;
-  width: 38px;
-  height: 38px;
-  border: 3px solid white;
-  border-radius: 999px;
-  background: var(--pink);
-  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-pill);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.45), transparent 50%),
+    linear-gradient(180deg, #ff7196, var(--gem-pink) 55%, var(--gem-pink-dark));
+  color: #fff;
   font-weight: 900;
+  font-size: 16px;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.85),
+    inset 0 -3px 0 rgba(168, 18, 60, 0.5),
+    0 4px 0 #6c0c2a,
+    0 6px 10px rgba(0, 0, 0, 0.4);
 }
 
+/* === 结果弹窗 === */
 #result-dialog {
   width: min(90vw, 420px);
   padding: 0;
@@ -420,39 +638,76 @@ button {
 }
 
 #result-dialog::backdrop {
-  background: rgba(0, 0, 0, 0.55);
+  background: radial-gradient(ellipse at center, rgba(10, 21, 53, 0.85) 0%, rgba(0, 0, 0, 0.85) 80%);
 }
 
 .dialog-card {
-  padding: 28px;
-  border: 4px solid var(--gold);
+  padding: 32px 28px;
   border-radius: 28px;
-  background: var(--cream);
-  color: var(--ink);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 30%),
+    linear-gradient(170deg, #0d1a44 0%, #15265c 50%, #0a1535 100%);
+  color: var(--cream);
   text-align: center;
+  box-shadow:
+    inset 0 0 0 3px var(--gold),
+    inset 0 0 0 6px var(--gold-darker),
+    inset 0 0 0 8px var(--gold-light),
+    0 20px 40px rgba(0, 0, 0, 0.6);
 }
 
 .dialog-card h2 {
-  margin: 0 0 10px;
+  margin: 0 0 12px;
   font-size: 42px;
+  color: var(--gold-light);
+  text-shadow:
+    -2px 0 0 var(--ink-deep),
+    2px 0 0 var(--ink-deep),
+    0 -2px 0 var(--ink-deep),
+    0 2px 0 var(--ink-deep),
+    0 5px 0 rgba(0, 0, 0, 0.45);
+}
+
+.dialog-card p {
+  margin: 0 0 20px;
+  font-size: 16px;
+  color: var(--cream);
+  opacity: 0.92;
 }
 
 .dialog-card button {
-  min-width: 150px;
+  min-width: 160px;
   height: 54px;
   border: 0;
-  border-radius: 999px;
-  background: var(--pink);
-  color: white;
+  border-radius: var(--radius-pill);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.4), transparent 50%),
+    linear-gradient(180deg, #ff7196, var(--gem-pink) 55%, var(--gem-pink-dark));
+  color: #fff;
   font-weight: 900;
+  font-size: 18px;
+  letter-spacing: 1px;
   cursor: pointer;
-  box-shadow: 0 8px 0 #a8183a;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.55),
+    inset 0 -4px 0 rgba(168, 18, 60, 0.5),
+    0 7px 0 #6c0c2a,
+    0 12px 18px rgba(0, 0, 0, 0.4);
+  transition: transform 130ms ease;
 }
 
+.dialog-card button:active {
+  transform: translateY(4px);
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.55),
+    0 3px 0 #6c0c2a,
+    0 6px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* === 移动竖屏 === */
 @media (max-width: 720px) {
-  #app {
-    padding: 8px;
-  }
+  #app { padding: 8px; }
 
   #game-shell {
     width: 100%;
@@ -466,8 +721,11 @@ button {
       "targets"
       "tools";
     gap: 10px;
-    padding: 10px;
+    padding: 12px;
+    border-radius: 22px;
   }
+
+  #game-shell::before { inset: 8px; border-radius: 14px; }
 
   #hud {
     grid-area: hud;
@@ -475,166 +733,125 @@ button {
     grid-template-columns: 1fr auto;
     align-items: flex-start;
     gap: 8px;
-    padding: 8px 9px;
-    border-width: 3px;
-    border-radius: 18px;
-    box-shadow: 0 4px 0 #b76d10, inset 0 0 0 2px rgba(255, 255, 255, 0.7);
+    padding: 10px 12px;
+    border-radius: 16px;
+    box-shadow:
+      inset 0 0 0 2px var(--gold-light),
+      inset 0 0 0 3.5px var(--gold-deep),
+      0 5px 0 var(--gold-darker),
+      0 8px 14px rgba(0, 0, 0, 0.35);
   }
 
-  .brand h1 {
-    margin-top: 4px;
-    font-size: 24px;
-  }
+  .brand h1 { margin-top: 2px; font-size: 22px; }
+  .level-pill { min-width: 70px; height: 22px; padding: 0 10px; font-size: 12px; }
 
-  .level-pill {
-    min-width: 76px;
-    height: 24px;
-    padding: 0 10px;
-    font-size: 13px;
-  }
-
-  .stats {
-    width: auto;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
+  .stats { gap: 6px; }
 
   .score-card {
     min-width: 0;
     width: 74px;
     min-height: 52px;
-    padding: 5px 7px;
-    border-width: 2px;
-    border-radius: 14px;
+    padding: 16px 7px 7px;
+    border-radius: 12px;
+    box-shadow:
+      inset 0 0 0 1.5px rgba(255, 255, 255, 0.6),
+      0 3px 0 #084464,
+      0 6px 8px rgba(0, 0, 0, 0.3);
   }
 
   .moves-orb {
-    width: 58px;
-    height: 58px;
-    border-width: 3px;
+    width: 58px; height: 58px;
+    box-shadow:
+      inset 0 0 0 2.5px rgba(255, 255, 255, 0.32),
+      0 4px 0 #6c0c2a,
+      0 8px 10px rgba(0, 0, 0, 0.3);
   }
 
-  .score-card strong,
-  .moves-orb strong {
-    font-size: 21px;
+  .score-card strong, .moves-orb strong { font-size: 22px; }
+  .score-card span, .moves-orb span {
+    top: 5px;
+    font-size: 9px;
+    letter-spacing: 1px;
   }
 
-  .score-card span,
-  .moves-orb span {
-    font-size: 11px;
-  }
-
-  .level-picker {
-    grid-area: levels;
-    margin: 0;
-    padding-bottom: 2px;
-  }
+  .level-picker { grid-area: levels; margin: 0; padding-bottom: 2px; }
 
   .level-chip {
     min-width: 31px;
     height: 31px;
-    border-width: 2px;
-    box-shadow: 0 3px 0 #ad6a0a;
+    font-size: 12px;
+    box-shadow:
+      inset 0 0 0 1.5px rgba(255, 255, 255, 0.6),
+      0 3px 0 var(--gold-darker),
+      0 5px 6px rgba(0, 0, 0, 0.3);
   }
 
-  .targets {
-    grid-area: targets;
-    grid-template-columns: 1fr;
-    gap: 8px;
-    margin: 0;
-  }
+  .targets { grid-area: targets; grid-template-columns: 1fr; gap: 8px; margin: 0; }
 
   #game-container {
     grid-area: board;
-    border-width: 4px;
-    border-radius: 22px;
-    box-shadow: 0 7px 0 #06262b, 0 0 0 3px var(--gold), 0 14px 22px rgba(0, 0, 0, 0.28);
+    border-radius: 18px;
+    box-shadow:
+      inset 0 0 0 2px var(--gold),
+      inset 0 0 0 4px var(--gold-darker),
+      inset 0 0 0 5.5px var(--gold-light),
+      0 8px 0 rgba(0, 0, 0, 0.55),
+      0 14px 22px rgba(0, 0, 0, 0.45);
   }
+
+  #game-container canvas { border-radius: 14px; }
 
   .target-card {
     min-height: 52px;
     grid-template-columns: 36px 1fr;
     gap: 7px;
     padding: 6px 7px;
-    border-width: 2px;
-    border-radius: 15px;
+    border-radius: 14px;
+    box-shadow:
+      inset 0 0 0 1.2px var(--gold),
+      0 3px 0 rgba(0, 0, 0, 0.35),
+      0 6px 10px rgba(0, 0, 0, 0.3);
   }
 
-  .target-card img {
-    width: 36px;
-    height: 36px;
-    border-width: 2px;
-    border-radius: 10px;
-  }
-
-  .target-card strong {
-    margin-bottom: 4px;
-    font-size: 13px;
-    white-space: nowrap;
-  }
-
-  .target-card .bar {
-    height: 10px;
-  }
-
-  .tool-title {
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 7px;
-  }
-
-  .tool-title strong {
-    font-size: 19px;
-  }
-
-  .tool-title span {
-    padding: 3px 8px;
-    font-size: 12px;
-  }
+  .target-card img { width: 36px; height: 36px; border-radius: 9px; }
+  .target-card strong { margin-bottom: 4px; font-size: 12px; white-space: nowrap; }
+  .target-card .bar { height: 10px; }
 
   .tools {
     grid-area: tools;
     margin-top: 0;
-    padding: 8px;
-    border-radius: 18px;
+    padding: 10px;
+    border-radius: 16px;
   }
 
-  .tool-row {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-  }
+  .tool-title { flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+  .tool-title strong { font-size: 18px; letter-spacing: 1px; }
+  .tool-title span { padding: 3px 8px; font-size: 11px; }
+
+  .tool-row { grid-template-columns: repeat(4, 1fr); gap: 8px; }
 
   .tool-button {
     min-width: 0;
     min-height: 62px;
     padding: 5px 3px 4px;
-    border-width: 2px;
     border-radius: 12px;
-    box-shadow: 0 4px 0 var(--tool-dark), 0 7px 8px rgba(0, 0, 0, 0.18);
+    box-shadow:
+      inset 0 0 0 1.5px rgba(255, 255, 255, 0.55),
+      0 4px 0 var(--tool-deepest),
+      0 7px 8px rgba(0, 0, 0, 0.3);
   }
 
-  .tool-core {
-    width: 30px;
-    height: 30px;
-    border-width: 3px;
-  }
-
-  .tool-core svg {
-    width: 17px;
-    height: 17px;
-  }
-
-  .tool-core.image-core {
-    width: 38px;
-    height: 38px;
-  }
+  .tool-button::before { inset: 3px; border-radius: 9px; }
+  .tool-core { width: 30px; height: 30px; }
+  .tool-core svg { width: 17px; height: 17px; }
+  .tool-core.image-core { width: 38px; height: 38px; }
 
   .tool-name {
     min-width: 38px;
     margin-top: 4px;
     padding: 2px 5px;
     font-size: 12px;
+    letter-spacing: 0.5px;
   }
 
   .tool-badge {
@@ -642,21 +859,23 @@ button {
     right: -6px;
     width: 22px;
     height: 22px;
-    border-width: 2px;
-    font-size: 12px;
+    font-size: 11px;
+    box-shadow:
+      inset 0 0 0 1.5px rgba(255, 255, 255, 0.85),
+      0 2.5px 0 #6c0c2a,
+      0 4px 6px rgba(0, 0, 0, 0.3);
   }
 }
 
+/* === 桌面横屏 === */
 @media (min-width: 980px) and (orientation: landscape) {
-  #app {
-    padding: 10px;
-  }
+  #app { padding: 10px; }
 
   #game-shell {
-    width: min(98vw, calc(min(68vh, 660px) + 386px));
+    width: min(98vw, calc(min(72vh, 700px) + 386px));
     max-height: calc(100dvh - 20px);
     display: grid;
-    grid-template-columns: minmax(520px, min(68vh, 660px)) minmax(280px, 340px);
+    grid-template-columns: minmax(520px, min(72vh, 700px)) minmax(280px, 340px);
     grid-template-areas:
       "board hud"
       "board levels"
@@ -664,7 +883,7 @@ button {
       "board tools";
     align-items: start;
     gap: 12px 16px;
-    padding: 14px;
+    padding: 16px;
     border-radius: 28px;
     overflow: hidden;
   }
@@ -674,47 +893,39 @@ button {
     display: grid;
     grid-template-columns: 1fr;
     gap: 10px;
-    padding: 12px;
-    border-width: 3px;
-    border-radius: 22px;
-    box-shadow: 0 6px 0 #b76d10, inset 0 0 0 2px rgba(255, 255, 255, 0.7);
+    padding: 14px 16px;
+    border-radius: 20px;
+    box-shadow:
+      inset 0 0 0 2.5px var(--gold-light),
+      inset 0 0 0 4.5px var(--gold-deep),
+      0 7px 0 var(--gold-darker),
+      0 12px 18px rgba(0, 0, 0, 0.4);
   }
 
-  .brand h1 {
-    margin-top: 6px;
-    font-size: 38px;
-  }
-
-  .level-pill {
-    min-width: 92px;
-    height: 30px;
-    padding: 0 12px;
-  }
+  .brand h1 { margin-top: 4px; font-size: 38px; }
+  .level-pill { min-width: 92px; height: 30px; padding: 0 12px; }
 
   .stats {
     width: 100%;
     display: grid;
-    grid-template-columns: 1fr 86px;
+    grid-template-columns: 1fr 92px;
     gap: 10px;
   }
 
   .score-card {
     min-width: 0;
-    min-height: 86px;
-    padding: 8px 12px;
+    min-height: 92px;
+    padding: 26px 12px 14px;
     border-radius: 18px;
   }
 
   .moves-orb {
-    width: 86px;
-    height: 86px;
-    border-width: 4px;
+    width: 92px;
+    height: 92px;
   }
 
-  .score-card strong,
-  .moves-orb strong {
-    font-size: 28px;
-  }
+  .score-card span, .moves-orb span { top: 9px; font-size: 11px; letter-spacing: 1.5px; }
+  .score-card strong, .moves-orb strong { font-size: 32px; }
 
   .level-picker {
     grid-area: levels;
@@ -725,129 +936,81 @@ button {
     overflow: visible;
   }
 
-  .level-chip {
-    min-width: 33px;
-    height: 33px;
-    border-width: 2px;
-    box-shadow: 0 4px 0 #ad6a0a;
-  }
+  .level-chip { min-width: 36px; height: 36px; font-size: 14px; }
 
-  .targets {
-    grid-area: targets;
-    grid-template-columns: 1fr;
-    gap: 9px;
-    margin: 0;
-  }
+  .targets { grid-area: targets; grid-template-columns: 1fr; gap: 9px; margin: 0; }
 
   .target-card {
-    min-height: 52px;
-    grid-template-columns: 36px 1fr;
-    gap: 7px;
-    padding: 6px 7px;
-    border-width: 2px;
-    border-radius: 15px;
-    box-shadow: 0 3px 0 color-mix(in srgb, var(--accent) 58%, #5a3500), inset 0 0 0 2px rgba(255, 255, 255, 0.72);
+    min-height: 56px;
+    grid-template-columns: 40px 1fr;
+    gap: 8px;
+    padding: 7px 9px;
+    border-radius: 16px;
   }
 
-  .target-card img {
-    width: 36px;
-    height: 36px;
-    border-width: 2px;
-    border-radius: 10px;
-  }
-
-  .target-card strong {
-    margin-bottom: 4px;
-    font-size: 13px;
-    white-space: nowrap;
-  }
-
-  .target-card .bar {
-    height: 10px;
-  }
+  .target-card img { width: 40px; height: 40px; border-radius: 11px; }
+  .target-card strong { margin-bottom: 4px; font-size: 13px; white-space: nowrap; }
+  .target-card .bar { height: 12px; }
 
   #game-container {
     grid-area: board;
     width: 100%;
     align-self: center;
     justify-self: center;
-    border-width: 4px;
     border-radius: 24px;
-    box-shadow: 0 8px 0 #06262b, 0 0 0 3px var(--gold), 0 18px 28px rgba(0, 0, 0, 0.32);
+    box-shadow:
+      inset 0 0 0 3px var(--gold),
+      inset 0 0 0 5px var(--gold-darker),
+      inset 0 0 0 7px var(--gold-light),
+      0 10px 0 rgba(0, 0, 0, 0.55),
+      0 18px 28px rgba(0, 0, 0, 0.45);
   }
+
+  #game-container canvas { border-radius: 18px; }
 
   .tools {
     grid-area: tools;
     margin-top: 0;
-    padding: 8px;
-    border-width: 3px;
+    padding: 10px 12px;
     border-radius: 18px;
-    box-shadow: 0 4px 0 #ad6a0a, inset 0 0 0 2px rgba(255, 255, 255, 0.74);
   }
 
-  .tool-title {
-    gap: 8px;
-    margin-bottom: 7px;
-  }
+  .tool-title { gap: 8px; margin-bottom: 8px; }
+  .tool-title strong { font-size: 18px; letter-spacing: 1px; }
+  .tool-title span { padding: 3px 8px; font-size: 12px; }
 
-  .tool-title strong {
-    font-size: 17px;
-  }
-
-  .tool-title span {
-    padding: 3px 8px;
-    font-size: 12px;
-  }
-
-  .tool-row {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-  }
+  .tool-row { grid-template-columns: repeat(4, 1fr); gap: 9px; }
 
   .tool-button {
-    min-height: 62px;
-    padding: 5px 3px 4px;
-    border-width: 2px;
-    border-radius: 12px;
-    box-shadow: 0 4px 0 var(--tool-dark), 0 7px 8px rgba(0, 0, 0, 0.18);
+    min-height: 66px;
+    padding: 6px 3px 5px;
+    border-radius: 13px;
+    box-shadow:
+      inset 0 0 0 1.5px rgba(255, 255, 255, 0.55),
+      0 5px 0 var(--tool-deepest),
+      0 9px 10px rgba(0, 0, 0, 0.3);
   }
 
-  .tool-button:hover,
-  .tool-button.selected {
-    outline-width: 3px;
-  }
-
-  .tool-core {
-    width: 30px;
-    height: 30px;
-    border-width: 3px;
-    box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.16), inset 0 5px 0 rgba(255, 255, 255, 0.22);
-  }
-
-  .tool-core svg {
-    width: 17px;
-    height: 17px;
-    stroke-width: 5.5;
-  }
-
-  .tool-core.image-core {
-    width: 38px;
-    height: 38px;
-  }
+  .tool-button::before { inset: 3px; border-radius: 10px; }
+  .tool-core.image-core { width: 40px; height: 40px; }
 
   .tool-name {
     min-width: 38px;
     margin-top: 4px;
-    padding: 2px 5px;
+    padding: 2px 6px;
     font-size: 12px;
+    letter-spacing: 0.5px;
   }
 
   .tool-badge {
-    top: -7px;
-    right: -6px;
-    width: 22px;
-    height: 22px;
-    border-width: 2px;
+    top: -8px;
+    right: -7px;
+    width: 24px;
+    height: 24px;
     font-size: 12px;
+    box-shadow:
+      inset 0 0 0 1.8px rgba(255, 255, 255, 0.85),
+      0 3px 0 #6c0c2a,
+      0 5px 6px rgba(0, 0, 0, 0.3);
   }
 }
