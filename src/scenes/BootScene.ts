@@ -1,4 +1,14 @@
 import Phaser from "phaser";
+import { levels } from "../game/LevelConfig";
+
+const tileTypesToPreload = Array.from(
+  new Set(
+    levels.flatMap((level) => [
+      ...level.tileTypes,
+      ...level.targets.flatMap((target) => (target.kind === "collect" ? [target.type] : [])),
+    ]),
+  ),
+).sort((a, b) => a - b);
 
 export class BootScene extends Phaser.Scene {
   constructor() {
@@ -6,8 +16,9 @@ export class BootScene extends Phaser.Scene {
   }
 
   preload(): void {
-    for (let i = 1; i <= 25; i += 1) {
-      this.load.image(`tile-${i}`, `/assets/tiles/tile-${String(i).padStart(2, "0")}.png`);
+    for (const type of tileTypesToPreload) {
+      const assetId = type + 1;
+      this.load.image(`tile-${assetId}`, `/assets/tiles/tile-${String(assetId).padStart(2, "0")}.jpg`);
     }
   }
 

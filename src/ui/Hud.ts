@@ -65,7 +65,7 @@ export class Hud {
         const progress = Math.min(100, Math.round((target.current / target.count) * 100));
         card.style.setProperty("--progress", `${progress}%`);
         card.innerHTML = `
-          <img src="/assets/tiles/tile-${String(target.type + 1).padStart(2, "0")}.png" alt="" />
+          <img src="/assets/tiles/tile-${String(target.type + 1).padStart(2, "0")}.jpg" alt="" />
           <div>
             <strong>收集 ${target.current}/${target.count}</strong>
             <div class="bar"><span></span></div>
@@ -75,7 +75,7 @@ export class Hud {
         const progress = Math.min(100, Math.round((snapshot.score / target.score) * 100));
         card.style.setProperty("--progress", `${progress}%`);
         card.innerHTML = `
-          <img src="/assets/tiles/tile-08.png" alt="" />
+          <img src="/assets/tiles/tile-08.jpg" alt="" />
           <div>
             <strong>分数 ${Math.min(snapshot.score, target.score).toLocaleString("zh-CN")}/${target.score.toLocaleString("zh-CN")}</strong>
             <div class="bar"><span></span></div>
