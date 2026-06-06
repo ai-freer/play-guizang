@@ -8,7 +8,7 @@ new Phaser.Game({
   parent: "game-container",
   width: 900,
   height: 900,
-  backgroundColor: "#f3f8ee",
+  backgroundColor: "#0a1535",
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,

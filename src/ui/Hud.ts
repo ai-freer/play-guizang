@@ -1,11 +1,20 @@
 import { LevelConfig } from "../game/LevelConfig";
+import { tileAssetUrl } from "../game/TileAssets";
+import { ToolKind } from "../game/ToolInventory";
 
 export type HudSnapshot = {
   level: LevelConfig;
   score: number;
   movesLeft: number;
-  tools: Record<"swap" | "bomb" | "refresh" | "hint", number>;
+  tools: Record<ToolKind, number>;
 };
+
+const TOOL_BUTTONS: Array<[string, ToolKind]> = [
+  ["#tool-swap", "swap"],
+  ["#tool-bomb", "bomb"],
+  ["#tool-refresh", "refresh"],
+  ["#tool-hint", "hint"],
+];
 
 export class Hud {
   private levelLabel = document.querySelector<HTMLSpanElement>("#level-label");
@@ -16,20 +25,22 @@ export class Hud {
   private resultTitle = document.querySelector<HTMLElement>("#result-title");
   private resultBody = document.querySelector<HTMLElement>("#result-body");
   private resultAction = document.querySelector<HTMLButtonElement>("#result-action");
-  private refreshButton = document.querySelector<HTMLButtonElement>("#tool-refresh");
-  private hintButton = document.querySelector<HTMLButtonElement>("#tool-hint");
 
   onContinue?: () => void;
-  onRefresh?: () => void;
-  onHint?: () => void;
+  onTool?: (kind: ToolKind) => void;
 
   constructor() {
     this.resultAction?.addEventListener("click", () => {
       this.dialog?.close();
       this.onContinue?.();
     });
-    this.refreshButton?.addEventListener("click", () => this.onRefresh?.());
-    this.hintButton?.addEventListener("click", () => this.onHint?.());
+    for (const [selector, kind] of TOOL_BUTTONS) {
+      document.querySelector<HTMLButtonElement>(selector)?.addEventListener("click", () => {
+        this.onTool?.(kind);
+      });
+    }
+    // 移除 HTML 里初始的 selected 类（旧逻辑没用）
+    document.querySelector("#tool-swap")?.classList.remove("selected");
   }
 
   update(snapshot: HudSnapshot): void {
@@ -38,6 +49,14 @@ export class Hud {
     if (this.movesValue) this.movesValue.textContent = String(snapshot.movesLeft);
     this.renderTargets(snapshot);
     this.updateTools(snapshot.tools);
+  }
+
+  setActiveTool(kind: ToolKind | null): void {
+    for (const [selector, k] of TOOL_BUTTONS) {
+      const btn = document.querySelector<HTMLButtonElement>(selector);
+      if (!btn) continue;
+      btn.classList.toggle("selected", kind === k);
+    }
   }
 
   showResult(kind: "won" | "lost", score: number): void {
@@ -65,7 +84,7 @@ export class Hud {
         const progress = Math.min(100, Math.round((target.current / target.count) * 100));
         card.style.setProperty("--progress", `${progress}%`);
         card.innerHTML = `
-          <img src="/assets/tiles/tile-${String(target.type + 1).padStart(2, "0")}.jpg" alt="" />
+          <img src="${tileAssetUrl(target.type)}" alt="" />
           <div>
             <strong>收集 ${target.current}/${target.count}</strong>
             <div class="bar"><span></span></div>
@@ -75,7 +94,7 @@ export class Hud {
         const progress = Math.min(100, Math.round((snapshot.score / target.score) * 100));
         card.style.setProperty("--progress", `${progress}%`);
         card.innerHTML = `
-          <img src="/assets/tiles/tile-08.jpg" alt="" />
+          <img src="${tileAssetUrl(7)}" alt="" />
           <div>
             <strong>分数 ${Math.min(snapshot.score, target.score).toLocaleString("zh-CN")}/${target.score.toLocaleString("zh-CN")}</strong>
             <div class="bar"><span></span></div>
@@ -88,17 +107,11 @@ export class Hud {
   }
 
   private updateTools(tools: HudSnapshot["tools"]): void {
-    const map = [
-      ["#tool-swap", tools.swap],
-      ["#tool-bomb", tools.bomb],
-      ["#tool-refresh", tools.refresh],
-      ["#tool-hint", tools.hint],
-    ] as const;
-
-    for (const [selector, count] of map) {
+    for (const [selector, kind] of TOOL_BUTTONS) {
       const button = document.querySelector<HTMLButtonElement>(selector);
       const badge = button?.querySelector<HTMLElement>(".tool-badge");
       if (!button || !badge) continue;
+      const count = tools[kind];
       badge.textContent = String(count);
       button.disabled = count <= 0;
       button.classList.toggle("disabled", count <= 0);

@@ -39,3 +39,8 @@ Original prompt: 制定开发实施计划，然后按 pdca 开始制作 web game
 - Check：第 3 关双目标场景横竖屏截图已保存到 `output/web-game/layout-landscape-level3.png` 和 `output/web-game/layout-mobile-level3.png`。
 - Do：已使用内置 imagegen 生成 4 个游戏感道具 PNG 图标，替换原先简陋 SVG 线图。
 - Check：工具图标横竖屏截图已更新到 `output/web-game/layout-landscape.png` 和 `output/web-game/layout-mobile.png`。
+- Do：性能优化：新增 tile asset helper，Boot 首屏只预加载当前关卡需要的 tile，关卡切换前按需补加载缺失 tile。
+- Do：性能优化：新增 Vite manualChunks，将 Phaser 拆成独立生产 chunk，业务入口 chunk 降到约 22.7KB。
+- Do：测试稳定性：`verify:gameplay` 改为等待状态变化，并让测试强制胜利钩子释放动画 busy 状态后再推进。
+- Check：`npm run build` 通过；生产产物为业务 JS `22.69KB` 与 Phaser JS `1.2MB` 两个 chunk。
+- Check：`npm run verify:gameplay` 通过；生产 preview 首屏 tile 请求为 `tile-01` 到 `tile-05`，截图保存到 `output/web-game/perf-preview-after-lazy-load.png`。
