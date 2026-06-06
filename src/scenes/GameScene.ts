@@ -138,6 +138,7 @@ export class GameScene extends Phaser.Scene {
       this.busy = false;
       this.selected = null;
       this.hintPair = null;
+      this.clearToolMode();
       for (const target of this.model.level.targets) {
         if (target.kind === "collect") target.current = target.count;
       }
@@ -339,8 +340,6 @@ export class GameScene extends Phaser.Scene {
   private drawSelection(): void {
     const old = this.children.getByName("selection-layer");
     if (old) old.destroy();
-    const banner = this.children.getByName("tool-banner");
-    if (banner) banner.destroy();
 
     const layer = this.add.graphics();
     layer.setName("selection-layer");
@@ -371,42 +370,21 @@ export class GameScene extends Phaser.Scene {
       }
     }
 
-    if (this.activeTool) {
-      this.drawToolBanner();
-    }
+    this.syncToolBanner();
   }
 
-  private drawToolBanner(): void {
-    const text = this.activeTool === "swap"
-      ? (this.selected ? "再点一个格子完成换位" : "换位：选择 2 个格子")
-      : "炸弹：点击目标格子（3x3 爆破）";
-
-    const container = this.add.container(450, 18);
-    container.setName("tool-banner");
-    container.setDepth(90);
-
-    const label = this.add.text(0, 0, text, {
-      fontFamily: "PingFang SC, sans-serif",
-      fontSize: "22px",
-      fontStyle: "bold",
-      color: "#1a0c2e",
-    });
-    label.setOrigin(0.5, 0);
-
-    const w = label.width + 56;
-    const h = label.height + 16;
-    const bg = this.add.graphics();
-    bg.fillStyle(0x000000, 0.45);
-    bg.fillRoundedRect(-w / 2 + 3, 5, w, h, 20);
-    bg.fillStyle(0xf5c542, 1);
-    bg.fillRoundedRect(-w / 2, 0, w, h, 20);
-    bg.fillStyle(0xfff1a8, 0.5);
-    bg.fillRoundedRect(-w / 2 + 8, 4, w - 16, 7, 4);
-    bg.lineStyle(2, 0xb8810f, 1);
-    bg.strokeRoundedRect(-w / 2, 0, w, h, 20);
-    label.y = 8;
-
-    container.add([bg, label]);
+  private syncToolBanner(): void {
+    const el = document.querySelector<HTMLElement>("#tool-banner");
+    if (!el) return;
+    if (!this.activeTool) {
+      el.classList.add("hidden");
+      return;
+    }
+    el.textContent = this.activeTool === "swap"
+      ? (this.selected ? "再点一个完成换位" : "换位：选择 2 个格子")
+      : "炸弹：点击格子（3x3 爆破）";
+    el.classList.remove("hidden");
+    el.dataset.tool = this.activeTool;
   }
 
   private select(pos: Position): void {
@@ -453,6 +431,7 @@ export class GameScene extends Phaser.Scene {
   private clearToolMode(): void {
     this.activeTool = null;
     this.hud.setActiveTool(null);
+    this.syncToolBanner();
   }
 
   private async executeToolSwap(a: Position, b: Position): Promise<void> {
@@ -473,6 +452,17 @@ export class GameScene extends Phaser.Scene {
     if (!result.accepted) {
       this.busy = false;
       this.syncHud();
+      return;
+    }
+
+    // 无消除：显式提示道具已扣，避免用户疑惑"按了没反应"
+    if (result.steps.length === 0) {
+      this.floatText("换位 -1", { row: Math.min(a.row, b.row), col: Math.floor((a.col + b.col) / 2) }, PALETTE.gold);
+      this.drawBoard();
+      this.syncHud();
+      await this.wait(360);
+      this.busy = false;
+      this.showEndStateIfNeeded();
       return;
     }
 
@@ -611,6 +601,9 @@ export class GameScene extends Phaser.Scene {
   }
 
   private showEndStateIfNeeded(): void {
+    if (this.model.mode === "won" || this.model.mode === "lost") {
+      this.clearToolMode();
+    }
     if (this.model.mode === "won") this.hud.showResult("won", this.model.score);
     if (this.model.mode === "lost") this.hud.showResult("lost", this.model.score);
   }

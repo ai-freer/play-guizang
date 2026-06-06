@@ -45,8 +45,17 @@ export class Hud {
 
   update(snapshot: HudSnapshot): void {
     if (this.levelLabel) this.levelLabel.textContent = `第 ${snapshot.level.id} 关`;
-    if (this.scoreValue) this.scoreValue.textContent = snapshot.score.toLocaleString("zh-CN");
-    if (this.movesValue) this.movesValue.textContent = String(snapshot.movesLeft);
+    if (this.scoreValue) {
+      const text = snapshot.score.toLocaleString("zh-CN");
+      this.scoreValue.textContent = text;
+      // 把字符串长度透传给 .score-card 让 CSS 按长度切字号
+      this.scoreValue.parentElement?.setAttribute("data-length", String(text.length));
+    }
+    if (this.movesValue) {
+      const text = String(snapshot.movesLeft);
+      this.movesValue.textContent = text;
+      this.movesValue.parentElement?.setAttribute("data-length", String(text.length));
+    }
     this.renderTargets(snapshot);
     this.updateTools(snapshot.tools);
   }
@@ -113,6 +122,8 @@ export class Hud {
       if (!button || !badge) continue;
       const count = tools[kind];
       badge.textContent = String(count);
+      // count=0 时藏角标，避免和 disabled 灰化视觉打架
+      badge.style.display = count > 0 ? "" : "none";
       button.disabled = count <= 0;
       button.classList.toggle("disabled", count <= 0);
     }
