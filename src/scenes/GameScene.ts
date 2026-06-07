@@ -164,6 +164,13 @@ export class GameScene extends Phaser.Scene {
 
     this.drawBoard();
     this.syncHud();
+
+    // 首帧画完再隐藏 loader，避免 loader 消失瞬间棋盘还没出现的空窗
+    const bootApi = (window as unknown as { __boot?: { set(p?: number, m?: string): void; hide(): void } }).__boot;
+    if (bootApi) {
+      bootApi.set(100, "开始游戏");
+      this.time.delayedCall(180, () => bootApi.hide());
+    }
   }
 
   private syncHud(): void {
