@@ -5,8 +5,190 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <title>消消藏师傅</title>
+    <style>
+      /* === 初次加载界面（内联，HTML 解析即显示） === */
+      #boot-loader {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: grid;
+        place-items: center;
+        background:
+          radial-gradient(ellipse at 18% 8%, rgba(160, 107, 255, 0.28) 0%, transparent 42%),
+          radial-gradient(ellipse at 88% 92%, rgba(56, 210, 255, 0.20) 0%, transparent 48%),
+          linear-gradient(160deg, #050a24 0%, #0a1535 38%, #16245a 76%, #0a1535 100%);
+        font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+        transition: opacity 420ms ease;
+        opacity: 1;
+      }
+      #boot-loader.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .boot-inner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 26px;
+        padding: 32px 24px;
+      }
+      .boot-title {
+        font-size: clamp(38px, 8vw, 64px);
+        font-weight: 900;
+        line-height: 1;
+        color: #fff5d7;
+        letter-spacing: 1px;
+        text-shadow:
+          -2.5px 0 0 #1a0c2e,
+          2.5px 0 0 #1a0c2e,
+          0 -2.5px 0 #1a0c2e,
+          0 2.5px 0 #1a0c2e,
+          -2.5px -2.5px 0 #1a0c2e,
+          2.5px -2.5px 0 #1a0c2e,
+          -2.5px 2.5px 0 #1a0c2e,
+          2.5px 2.5px 0 #1a0c2e,
+          0 6px 0 rgba(0, 0, 0, 0.45),
+          0 10px 18px rgba(122, 60, 0, 0.55);
+        animation: boot-title-pop 600ms cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .boot-sub {
+        color: #f5c542;
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 4px;
+        opacity: 0.85;
+      }
+      .boot-bar {
+        position: relative;
+        width: min(320px, 80vw);
+        height: 26px;
+        border-radius: 999px;
+        background: rgba(0, 0, 0, 0.55);
+        box-shadow:
+          inset 0 0 0 3px #f5c542,
+          inset 0 0 0 5px #7a560a,
+          inset 0 0 0 7px #fff1a8,
+          inset 0 3px 6px rgba(0, 0, 0, 0.55),
+          0 8px 20px rgba(0, 0, 0, 0.45);
+        overflow: hidden;
+      }
+      .boot-bar-track {
+        position: absolute;
+        inset: 8px;
+        border-radius: 999px;
+        background: rgba(0, 0, 0, 0.65);
+        overflow: hidden;
+      }
+      .boot-bar-fill {
+        display: block;
+        height: 100%;
+        width: 0%;
+        border-radius: inherit;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.55), transparent 50%),
+          linear-gradient(180deg, #5ee4ff 0%, #38d2ff 55%, #0a5b88 100%);
+        box-shadow:
+          inset 0 0 0 1px rgba(255, 255, 255, 0.55),
+          0 0 12px rgba(56, 210, 255, 0.55);
+        transition: width 320ms ease-out;
+      }
+      .boot-bar-fill::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        width: 40px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+        animation: boot-bar-shimmer 1.4s linear infinite;
+      }
+      .boot-status {
+        color: #fff5d7;
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        min-height: 20px;
+      }
+      .boot-status .boot-percent {
+        color: #f5c542;
+        margin-left: 8px;
+      }
+      @keyframes boot-title-pop {
+        0% { transform: scale(0.6); opacity: 0; }
+        60% { transform: scale(1.08); opacity: 1; }
+        100% { transform: scale(1); }
+      }
+      @keyframes boot-bar-shimmer {
+        from { transform: translateX(-50px); }
+        to { transform: translateX(50px); }
+      }
+    </style>
+    <script>
+      // 暴露给 main.ts / BootScene 的进度 API。
+      // 状态：0–15 模拟（JS bundle 下载中无法测）/ 15–90 Phaser 真实 / 90–100 首帧
+      (function () {
+        var fill = null;
+        var status = null;
+        var percent = null;
+        var loader = null;
+        var currentPct = 0;
+        function init() {
+          fill = document.querySelector(".boot-bar-fill");
+          status = document.querySelector(".boot-status-text");
+          percent = document.querySelector(".boot-percent");
+          loader = document.querySelector("#boot-loader");
+        }
+        function set(pct, msg) {
+          if (!fill) init();
+          if (pct == null) pct = currentPct;
+          pct = Math.max(currentPct, Math.min(100, pct));
+          currentPct = pct;
+          if (fill) fill.style.width = pct + "%";
+          if (percent) percent.textContent = Math.round(pct) + "%";
+          if (status && msg) status.textContent = msg;
+        }
+        function hide() {
+          if (!loader) init();
+          set(100);
+          if (loader) {
+            loader.classList.add("hidden");
+            setTimeout(function () {
+              if (loader && loader.parentNode) loader.parentNode.removeChild(loader);
+            }, 500);
+          }
+        }
+        window.__boot = { set: set, hide: hide };
+        // bundle 还在下载时，1.5s 内从 0 缓慢爬到 15%
+        var t = 0;
+        var crawl = setInterval(function () {
+          t += 80;
+          if (window.__bootDone || currentPct >= 15) {
+            clearInterval(crawl);
+            return;
+          }
+          var target = Math.min(15, t / 1500 * 15);
+          set(target, "加载中…");
+        }, 80);
+      })();
+    </script>
   </head>
   <body>
+    <div id="boot-loader" aria-label="加载中">
+      <div class="boot-inner">
+        <div class="boot-title">消消藏师傅</div>
+        <div class="boot-sub">XIAO XIAO CANG SHI FU</div>
+        <div class="boot-bar">
+          <div class="boot-bar-track">
+            <span class="boot-bar-fill"></span>
+          </div>
+        </div>
+        <div class="boot-status">
+          <span class="boot-status-text">加载中…</span>
+          <span class="boot-percent">0%</span>
+        </div>
+      </div>
+    </div>
+
     <div id="app">
       <div id="game-shell">
         <section id="hud" aria-label="游戏状态">
