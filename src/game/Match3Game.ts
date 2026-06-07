@@ -1,6 +1,6 @@
 import { Board, MatchGroup, Position, Tile } from "./Board";
 import { findValidMove } from "./BoardTestUtils";
-import { CollectTarget, getLevel, LevelConfig } from "./LevelConfig";
+import { CollectTarget, getLevel, LevelConfig, levels } from "./LevelConfig";
 import { nextLevelId } from "./LevelProgress";
 import { loadProgress, saveProgress } from "./ProgressStore";
 import { scoreForClear } from "./Scoring";
@@ -28,6 +28,8 @@ export class Match3Game {
   movesLeft = 0;
   mode: GameMode = "playing";
   tools: ToolInventory = defaultTools();
+  /** 本次操作刚刚把全部 10 关都打完（首次通关瞬间），用于 GameScene 弹通关庆祝 */
+  justCompletedRun = false;
 
   constructor(levelId = loadProgress().currentLevel) {
     this.level = getLevel(levelId);
@@ -42,6 +44,7 @@ export class Match3Game {
     this.movesLeft = this.level.moveLimit;
     this.mode = "playing";
     this.tools = defaultTools();
+    this.justCompletedRun = false;
     const progress = loadProgress();
     saveProgress({ ...progress, currentLevel: levelId, lastScore: 0 });
   }
@@ -139,6 +142,11 @@ export class Match3Game {
     return this.collectHint();
   }
 
+  /** 外部（debug forceWin / 完整通关测试）已手动把状态置为 won 时，统一走持久化路径 */
+  finalizeWin(): void {
+    this.persistIfNeeded(this.mode === "won");
+  }
+
   toTextState(): string {
     return JSON.stringify({
       coordinateSystem: "board origin at top-left; row increases downward; col increases rightward",
@@ -201,11 +209,29 @@ export class Match3Game {
     const highestUnlockedLevel = won
       ? Math.max(progress.highestUnlockedLevel, next)
       : progress.highestUnlockedLevel;
+
+    let clearedLevels = progress.clearedLevels;
+    let gameCompletedAt = progress.gameCompletedAt;
+    this.justCompletedRun = false;
+
+    if (won) {
+      if (!clearedLevels.includes(this.level.id)) {
+        clearedLevels = [...clearedLevels, this.level.id].sort((a, b) => a - b);
+      }
+      const allCleared = levels.every((lv) => clearedLevels.includes(lv.id));
+      if (allCleared && !gameCompletedAt) {
+        gameCompletedAt = new Date().toISOString();
+        this.justCompletedRun = true;
+      }
+    }
+
     saveProgress({
       ...progress,
       currentLevel: won ? next : this.level.id,
       highestUnlockedLevel,
       lastScore: this.score,
+      clearedLevels,
+      gameCompletedAt,
     });
   }
 }
