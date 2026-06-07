@@ -11,6 +11,11 @@ page.on("console", (msg) => {
 page.on("pageerror", (err) => errors.push(err.message));
 
 await page.goto(url, { waitUntil: "networkidle" });
+// 清旧 cookie，确保测试从 L1 开始（避免 L10 通关态影响关卡推进断言）
+await page.evaluate(() => {
+  document.cookie = "xxcs_progress=; max-age=0; path=/";
+});
+await page.reload({ waitUntil: "networkidle" });
 await page.waitForFunction(() => typeof window.render_game_to_text === "function");
 await page.waitForTimeout(500);
 

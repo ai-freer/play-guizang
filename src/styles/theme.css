@@ -307,6 +307,32 @@ button { font: inherit; }
     0 10px 18px rgba(255, 61, 110, 0.4);
 }
 
+/* 已通关：金光环 + 顶部小星标记 */
+.level-chip.cleared:not(.active) {
+  position: relative;
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.7),
+    inset 0 -4px 0 rgba(122, 86, 10, 0.45),
+    0 0 0 2.5px var(--gold-light),
+    0 5px 0 var(--gold-darker),
+    0 0 14px rgba(245, 197, 66, 0.65);
+}
+.level-chip.cleared::after {
+  content: "★";
+  position: absolute;
+  top: -8px;
+  right: -4px;
+  font-size: 13px;
+  color: var(--gold-light);
+  text-shadow:
+    -1px 0 0 var(--ink-deep),
+    1px 0 0 var(--ink-deep),
+    0 -1px 0 var(--ink-deep),
+    0 1px 0 var(--ink-deep),
+    0 0 6px rgba(245, 197, 66, 0.9);
+  pointer-events: none;
+}
+
 .level-chip:disabled {
   cursor: not-allowed;
   filter: grayscale(1) brightness(0.55);
@@ -759,6 +785,68 @@ button { font: inherit; }
     inset 0 0 0 2px rgba(255, 255, 255, 0.55),
     0 3px 0 #6c0c2a,
     0 6px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* === 首次通关庆祝弹窗：金色加强 + 礼花动效 === */
+.dialog-card.dialog-completed {
+  border-radius: 32px;
+  background:
+    linear-gradient(180deg, rgba(255, 241, 168, 0.12), transparent 30%),
+    linear-gradient(170deg, #1a1450 0%, #2a1858 50%, #15265c 100%);
+  box-shadow:
+    inset 0 0 0 4px var(--gold),
+    inset 0 0 0 8px var(--gold-darker),
+    inset 0 0 0 10px var(--gold-light),
+    inset 0 0 60px rgba(245, 197, 66, 0.18),
+    0 0 80px rgba(245, 197, 66, 0.35),
+    0 24px 50px rgba(0, 0, 0, 0.7);
+  animation: dialog-pop 460ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.dialog-card.dialog-completed h2 {
+  font-size: 48px;
+  background: linear-gradient(180deg, #fff1a8 0%, #f5c542 60%, #b8810f 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+  filter: drop-shadow(0 4px 0 var(--ink-deep)) drop-shadow(0 8px 14px rgba(0, 0, 0, 0.55));
+  animation: trophy-shine 2.4s ease-in-out infinite;
+}
+
+.dialog-card.dialog-completed p {
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.dialog-card.dialog-completed button {
+  min-width: 200px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.5), transparent 50%),
+    linear-gradient(180deg, var(--gold-light) 0%, var(--gold) 55%, var(--gold-deep) 100%);
+  color: var(--ink-deep);
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.7),
+    inset 0 -4px 0 rgba(122, 86, 10, 0.45),
+    0 7px 0 var(--gold-darker),
+    0 12px 18px rgba(245, 197, 66, 0.45);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.dialog-card.dialog-final-replay h2 {
+  font-size: 36px;
+  color: var(--gold-light);
+}
+
+@keyframes dialog-pop {
+  0% { transform: scale(0.7); opacity: 0; }
+  60% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+@keyframes trophy-shine {
+  0%, 100% { filter: drop-shadow(0 4px 0 var(--ink-deep)) drop-shadow(0 8px 14px rgba(0, 0, 0, 0.55)); }
+  50% { filter: drop-shadow(0 4px 0 var(--ink-deep)) drop-shadow(0 0 18px rgba(245, 197, 66, 0.7)); }
 }
 
 /* === 移动竖屏 === */

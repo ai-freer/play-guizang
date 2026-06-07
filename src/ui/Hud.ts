@@ -68,14 +68,39 @@ export class Hud {
     }
   }
 
-  showResult(kind: "won" | "lost", score: number): void {
+  showResult(kind: "won" | "lost" | "completed" | "final-replay", score: number): void {
     if (!this.dialog || !this.resultTitle || !this.resultBody || !this.resultAction) return;
-    this.resultTitle.textContent = kind === "won" ? "过关！" : "没步数了";
-    this.resultBody.textContent =
-      kind === "won"
-        ? `本关得分 ${score.toLocaleString("zh-CN")}，下一关继续加码。`
-        : `本关得分 ${score.toLocaleString("zh-CN")}，再试一次。`;
-    this.resultAction.textContent = kind === "won" ? "下一关" : "重试";
+    const dialogCard = this.dialog.querySelector<HTMLElement>(".dialog-card");
+    // 移除之前可能挂上的 kind class
+    dialogCard?.classList.remove("dialog-completed", "dialog-final-replay");
+
+    const niceScore = score.toLocaleString("zh-CN");
+
+    switch (kind) {
+      case "completed":
+        dialogCard?.classList.add("dialog-completed");
+        this.resultTitle.textContent = "🎉 通关！";
+        this.resultBody.innerHTML = `恭喜成为<strong style="color:#f5c542">消消藏师傅</strong>！<br/>你已通关全部 10 关。<br/>从上方关卡条选任意一关继续练习。`;
+        this.resultAction.textContent = "回到选关";
+        break;
+      case "final-replay":
+        dialogCard?.classList.add("dialog-final-replay");
+        this.resultTitle.textContent = "再次拿下 L10";
+        this.resultBody.textContent = `本关得分 ${niceScore}，从上方关卡条选其他关继续练习。`;
+        this.resultAction.textContent = "去选关";
+        break;
+      case "won":
+        this.resultTitle.textContent = "过关！";
+        this.resultBody.textContent = `本关得分 ${niceScore}，下一关继续加码。`;
+        this.resultAction.textContent = "下一关";
+        break;
+      case "lost":
+      default:
+        this.resultTitle.textContent = "没步数了";
+        this.resultBody.textContent = `本关得分 ${niceScore}，再试一次。`;
+        this.resultAction.textContent = "重试";
+        break;
+    }
     if (!this.dialog.open) this.dialog.showModal();
   }
 

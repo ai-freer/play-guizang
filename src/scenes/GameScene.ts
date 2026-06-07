@@ -2,8 +2,8 @@ import Phaser from "phaser";
 import { Match3Game } from "../game/Match3Game";
 import { Position, Tile } from "../game/Board";
 import { Hud } from "../ui/Hud";
-import { nextLevelId } from "../game/LevelProgress";
-import { loadProgress, saveProgress } from "../game/ProgressStore";
+import { isFinalLevel, nextLevelId } from "../game/LevelProgress";
+import { loadProgress } from "../game/ProgressStore";
 import { LevelPicker } from "../ui/LevelPicker";
 import { getLevel } from "../game/LevelConfig";
 import { loadLevelTileImages, tileTextureKey } from "../game/TileAssets";
@@ -80,8 +80,17 @@ export class GameScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor("#0a1535");
     this.drawStageBackdrop();
     this.hud.onContinue = () => {
-      const nextLevel = this.model.mode === "won" ? nextLevelId(this.model.level.id) : this.model.level.id;
-      void this.switchToLevel(nextLevel);
+      if (this.model.mode === "won") {
+        // 末关：通关或再通关 → 不自动跳，停在 L10 让用户从关卡条选
+        if (isFinalLevel(this.model.level.id)) {
+          this.syncLevelPicker();
+          return;
+        }
+        void this.switchToLevel(nextLevelId(this.model.level.id));
+        return;
+      }
+      // 输了或其他：重开当前关
+      void this.switchToLevel(this.model.level.id);
     };
     this.hud.onTool = (kind) => {
       if (this.busy) return;
@@ -144,16 +153,9 @@ export class GameScene extends Phaser.Scene {
       }
       this.model.score = Math.max(this.model.score, 9999);
       this.model.mode = "won";
-      const progress = loadProgress();
-      const nextLevel = nextLevelId(this.model.level.id);
-      saveProgress({
-        ...progress,
-        currentLevel: nextLevel,
-        highestUnlockedLevel: Math.max(progress.highestUnlockedLevel, nextLevel),
-        lastScore: this.model.score,
-      });
+      this.model.finalizeWin();  // 统一走 persistIfNeeded：累积 clearedLevels + 检测首次通关
       this.syncHud();
-      this.hud.showResult("won", this.model.score);
+      this.showEndStateIfNeeded();
       return this.model.toTextState();
     };
 
@@ -180,10 +182,15 @@ export class GameScene extends Phaser.Scene {
       movesLeft: this.model.movesLeft,
       tools: this.model.tools,
     });
+    this.syncLevelPicker();
+  }
+
+  private syncLevelPicker(): void {
     const progress = loadProgress();
     this.levelPicker.render({
       currentLevel: this.model.level.id,
       highestUnlockedLevel: progress.highestUnlockedLevel,
+      clearedLevels: progress.clearedLevels,
     });
   }
 
@@ -611,7 +618,16 @@ export class GameScene extends Phaser.Scene {
     if (this.model.mode === "won" || this.model.mode === "lost") {
       this.clearToolMode();
     }
-    if (this.model.mode === "won") this.hud.showResult("won", this.model.score);
+    if (this.model.mode === "won") {
+      this.syncLevelPicker();
+      if (this.model.justCompletedRun) {
+        this.hud.showResult("completed", this.model.score);
+      } else if (isFinalLevel(this.model.level.id)) {
+        this.hud.showResult("final-replay", this.model.score);
+      } else {
+        this.hud.showResult("won", this.model.score);
+      }
+    }
     if (this.model.mode === "lost") this.hud.showResult("lost", this.model.score);
   }
 
